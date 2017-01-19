@@ -63,22 +63,41 @@ Theta2_grad = zeros(size(Theta2));
 %
 
 
+Y = zeros(m, num_labels);
+for i=1:m
+	Y(i, y(i)) = 1;
+endfor
 
+Theta1_temp = Theta1;
+Theta1_temp(:, 1) = 0;
+Theta2_temp = Theta2;
+Theta2_temp(:, 1) = 0;
 
+Htheta = sigmoid([ones(m, 1), sigmoid([ones(m, 1), X]*Theta1')]*Theta2');
 
+J = sum(sum(-Y.*log(Htheta) - (1-Y).*log(1-Htheta)))/m;
+J = J + lambda*(sum(sum(Theta1_temp.*Theta1_temp)) + sum(sum(Theta2_temp.*Theta2_temp)))/(2*m);
 
-
-
-
-
-
-
-
-
-
-
-
-
+for t=1:m
+	x = X(t, :);
+	y_1 = Y(t, :);
+	y_1 = y_1';
+	a_1 = x';
+	a_1 = [1 ; a_1];
+	z_2 = Theta1 * a_1;
+	a_2 = sigmoid(z_2);
+	a_2 = [1 ; a_2];
+	z_3 = Theta2 * a_2;
+	a_3 = sigmoid(z_3);
+	delta_3 = a_3 - y_1;
+	delta_2 = (Theta2' * delta_3);
+	delta_2 = delta_2(2:end);
+	delta_2 = delta_2 .* sigmoidGradient(z_2);
+	Theta1_grad = Theta1_grad + delta_2 * a_1';
+	Theta2_grad = Theta2_grad + delta_3 * a_2';
+endfor
+Theta1_grad = Theta1_grad/m + lambda*Theta1_temp/m;
+Theta2_grad = Theta2_grad/m + lambda*Theta2_temp/m;
 
 % -------------------------------------------------------------
 
