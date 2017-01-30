@@ -22,8 +22,8 @@ sigma2 = zeros(n, 1);
 %
 
 
-
-
+mu = sum(X, 1)'/m;
+sigma2 = sum(X .* X, 1)'/m - mu.*mu;
 
 
 
